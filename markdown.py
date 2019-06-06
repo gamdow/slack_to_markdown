@@ -2,6 +2,8 @@ import os
 import urllib.request as urlr
 
 max_text_file_lines = 10
+# pandoc markdown treats newlines as spaces unless  there are multiple spaces before it (https://rmarkdown.rstudio.com/authoring_pandoc_markdown.html%23raw-tex)
+newline = '  \n'
 
 
 class MarkdownMessage():
@@ -31,7 +33,7 @@ class MarkdownMessage():
 
     def newline(self, num=1):
         for _ in range(num):
-            self._msg += '\n'
+            self._msg += newline
 
     def add(self, string):
         self._msg += self._prefix
@@ -96,11 +98,13 @@ class MessageParser():
         if msg.is_user_message():
             if self._my_user_id is None or msg.user_id != self._my_user_id:
                 # markdown bold
-                md.add("**" + self._user_id_map[msg.user_id] + "**: ")
+                md.add("**" + self._user_id_map[msg.user_id] + "**:")
                 if msg.num_lines + msg.num_files > 1:
-                    md.add('\n')
+                    md.newline(2)
                     # markdown quote
                     md.line_prefix = '> '
+                else:
+                    md.add(' ')
 
             for line in msg.yield_lines():
                 if line.startswith('• '):

@@ -1,5 +1,5 @@
 from .slack import Export
-from .markdown import MessageParser
+from .markdown import MessageParser, newline
 from .progress import bar as pbar
 from collections import defaultdict
 from datetime import datetime
@@ -67,10 +67,12 @@ def convert(zip_path, start_date=None, end_date=None, my_user_name=None, users=N
         for day, channel, line in pbar(list, len(list)):
             if last_day != day:
                 date = datetime.fromtimestamp(day * seconds_in_day)
-                file.write('# ' + str(date.date()) + '\n')
+                file.write('\n# ' + str(date.date()) + newline)
                 last_day = day
                 last_channel = None
             if channel != last_channel:
-                file.write('### ' + channel + '\n')
+                file.write('\n## ' + channel + newline)
                 last_channel = channel
-            file.write(line + '\n')
+            file.write(line + newline)
+
+    return filename
